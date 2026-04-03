@@ -7,6 +7,7 @@ import Fleet from "./pages/Fleet";
 import Bookings from "./pages/Bookings";
 import Scanner from "./pages/Scanner";
 import AppLayout from "./layouts/AppLayout";
+import Login from "./pages/Login";
 import { Toaster } from "sonner";
 
 export default function App() {
@@ -17,6 +18,7 @@ export default function App() {
         <Router>
           <Routes>
             <Route path="/" element={<AppSafe />} />
+            <Route path="/login" element={<Login />} />
             <Route path="" element={<AppLayout />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/routes" element={<RRoutes />} />
