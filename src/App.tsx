@@ -1,5 +1,32 @@
+// @ts-ignore
+import AppSafe from "./campus_transit";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Dashboard from "./pages/Dashboard";
+import RRoutes from "./pages/RRoutes";
+import Fleet from "./pages/Fleet";
+import Bookings from "./pages/Bookings";
+import Scanner from "./pages/Scanner";
+import AppLayout from "./layouts/AppLayout";
+import { Toaster } from "sonner";
+
 export default function App() {
   return (
-    <div>App</div>
+    <div>
+      <>
+        <Toaster richColors position="top-right" />
+        <Router>
+          <Routes>
+            <Route path="/" element={<AppSafe />} />
+            <Route path="" element={<AppLayout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/routes" element={<RRoutes />} />
+              <Route path="/fleet" element={<Fleet />} />
+              <Route path="/bookings" element={<Bookings />} />
+              <Route path="/scanner" element={<Scanner />} />
+            </Route>
+          </Routes>
+        </Router>
+      </>
+    </div>
   )
 }
