@@ -29,28 +29,22 @@ export default function LoginScreen() {
 
     return (
         <div className="min-h-screen flex items-center justify-center px-6 bg-gradient-to-br from-slate-900 to-emerald-900">
-
             <div className="w-full max-w-md">
-
                 <div className="text-center mb-10">
                     <div className="w-20 h-20 bg-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                         <Bus size={36} className="text-white" />
                     </div>
-
                     <h1 className="text-2xl font-bold text-white tracking-widest">
                         CAMPUSTRANSIT
                     </h1>
-
                     <p className="text-emerald-300 text-sm mt-2">
                         Admin Dashboard Access
                     </p>
                 </div>
-
                 <form
                     onSubmit={handleSubmit}
                     className="bg-white rounded-2xl p-6 shadow-xl space-y-5"
                 >
-
                     <Input
                         label="Email Address"
                         name="email"
@@ -60,7 +54,6 @@ export default function LoginScreen() {
                         onChange={handleChange}
                         leftIcon={<Mail size={18} />}
                     />
-
                     <Input
                         label="Password"
                         name="password"
@@ -70,7 +63,6 @@ export default function LoginScreen() {
                         onChange={handleChange}
                         leftIcon={<Lock size={18} />}
                     />
-
                     <Button
                         type="submit"
                         className="w-full mt-2"
@@ -79,7 +71,6 @@ export default function LoginScreen() {
                         Login to Dashboard
                     </Button>
                 </form>
-
                 <p className="text-center text-xs text-white/30 mt-8">
                     © 2026 UNIPH Transport Services
                 </p>
