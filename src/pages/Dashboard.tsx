@@ -79,7 +79,7 @@ const statusStyles = {
   cancelled: "bg-gray-100 text-gray-500",
 };
 
-export default function AdminDashboard() {
+export default function Dashboard() {
   const totalRevenue = BOOKINGS
     .filter((b) => b.status !== "cancelled")
     .reduce((sum, b) => sum + b.fare, 0);
