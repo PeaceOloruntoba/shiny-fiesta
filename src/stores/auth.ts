@@ -7,7 +7,7 @@ export type User = {
     id: string;
     email: string;
     name?: string;
-    role?: "farmer" | "staff" | "vet" | "admin";
+    role?: "users" | "admin";
     profile_image?: string;
 };
 

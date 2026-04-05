@@ -3,6 +3,7 @@ import { Bus, Mail, Lock } from "lucide-react";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import { useNavigate } from "react-router-dom";
+import ConfirmationModal from "../components/ui/ConfirmationModal";
 
 export default function LoginScreen() {
     const [form, setForm] = useState({
@@ -11,7 +12,8 @@ export default function LoginScreen() {
     });
 
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate()
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const navigate = useNavigate();
 
     function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -20,7 +22,12 @@ export default function LoginScreen() {
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         if (!form.email || !form.password) return;
+        setIsConfirmOpen(true);
+    }
+
+    async function confirmLogin() {
         setLoading(true);
+        setIsConfirmOpen(false);
         setTimeout(() => {
             setLoading(false);
             navigate("/dashboard");
@@ -75,6 +82,17 @@ export default function LoginScreen() {
                     © 2026 UNIPH Transport Services
                 </p>
             </div>
+
+            <ConfirmationModal 
+                isOpen={isConfirmOpen}
+                onClose={() => setIsConfirmOpen(false)}
+                onConfirm={confirmLogin}
+                title="Confirm Login"
+                description="Are you sure you want to log in to the admin dashboard?"
+                confirmText="Yes, Login"
+                variant="proceed"
+                isLoading={loading}
+            />
         </div>
     );
 }
