@@ -1,8 +1,24 @@
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Bus, LogOut } from "lucide-react";
+import { useAuth } from "../stores/auth";
+import ConfirmationModal from "../components/ui/ConfirmationModal";
 
 export default function Sidebar({ nav, isOpen }: any) {
-    const user = { name: "John Doe" };
+    const { logout, user: authUser } = useAuth();
+    const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
+    
+    // Use user from auth store if available, otherwise fallback
+    const user = authUser || { name: "Admin User" };
+
+    const handleLogout = () => {
+        setIsLogoutConfirmOpen(true);
+    };
+
+    const confirmLogout = () => {
+        logout();
+        setIsLogoutConfirmOpen(false);
+    };
 
     return (
         <aside
@@ -72,11 +88,11 @@ export default function Sidebar({ nav, isOpen }: any) {
                 {isOpen && (
                     <div className="flex items-center gap-3 mb-3 px-2">
                         <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center font-bold">
-                            {user.name[0]}
+                            {user.name ? user.name[0] : "A"}
                         </div>
                         <div>
                             <p className="text-sm font-semibold">
-                                {user.name.split(" ")[0]}
+                                {user.name ? user.name.split(" ")[0] : "Admin"}
                             </p>
                             <p className="text-xs text-slate-400">Administrator</p>
                         </div>
@@ -86,6 +102,7 @@ export default function Sidebar({ nav, isOpen }: any) {
                 {/* Logout with tooltip */}
                 <div className="relative group">
                     <button
+                        onClick={handleLogout}
                         className={`
               flex items-center gap-2 w-full px-3 py-2 rounded-lg
               text-slate-400 hover:bg-slate-800 hover:text-white
@@ -112,6 +129,16 @@ export default function Sidebar({ nav, isOpen }: any) {
                     )}
                 </div>
             </div>
+
+            <ConfirmationModal 
+                isOpen={isLogoutConfirmOpen}
+                onClose={() => setIsLogoutConfirmOpen(false)}
+                onConfirm={confirmLogout}
+                title="Confirm Logout"
+                description="Are you sure you want to log out of the admin panel?"
+                confirmText="Yes, Logout"
+                variant="danger"
+            />
         </aside>
     );
 }

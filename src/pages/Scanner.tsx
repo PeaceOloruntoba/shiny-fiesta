@@ -1,16 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { 
   QrCode, 
   XCircle,
   Calendar,
   Clock,
   User as UserIcon,
-  MapPin
+  MapPin,
+  Camera,
+  RefreshCw
 } from "lucide-react";
 import { useScanner } from "../stores/scanner";
 import { useRoutes } from "../stores/routes";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
+import { Html5Qrcode } from "html5-qrcode";
 
 const statusCfg: Record<string, { bg: string; color: string; label: string }> = {
     confirmed: { bg: "bg-green-50", color: "text-green-600", label: "Valid" },
@@ -22,8 +25,61 @@ export default function Scanner() {
   const { scanning, result, scan, validate, reset } = useScanner();
   const { routes } = useRoutes();
   const [ticketId, setTicketId] = useState("");
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const qrCodeRegionId = "html5qr-code-full-region";
+  const scannerRef = useRef<Html5Qrcode | null>(null);
 
-  const handleScan = async () => {
+  useEffect(() => {
+    // Start scanner on mount
+    startScanner();
+
+    return () => {
+      // Stop scanner on unmount
+      if (scannerRef.current && scannerRef.current.isScanning) {
+        scannerRef.current.stop().catch(err => console.error("Error stopping scanner", err));
+      }
+    };
+  }, []);
+
+  const startScanner = async () => {
+    try {
+      setCameraError(null);
+      const html5QrCode = new Html5Qrcode(qrCodeRegionId);
+      scannerRef.current = html5QrCode;
+
+      const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+      await html5QrCode.start(
+        { facingMode: "environment" },
+        config,
+        (decodedText) => {
+          // Success callback
+          handleQRCodeScanned(decodedText);
+        },
+        (errorMessage) => {
+          console.log(errorMessage)
+          // This is a continuous scan, so we don't necessarily want to log every failure
+          // unless it's a critical error.
+        }
+      );
+      setHasPermission(true);
+    } catch (err: any) {
+      console.error("Camera access error:", err);
+      if (err.name === "NotAllowedError" || err === "NotAllowedError") {
+        setHasPermission(false);
+      } else {
+        setCameraError(err.message || "Failed to start camera");
+      }
+    }
+  };
+
+  const handleQRCodeScanned = async (decodedText: string) => {
+    setTicketId(decodedText);
+    await scan(decodedText);
+  };
+
+  const handleManualScan = async () => {
     if (ticketId) {
       await scan(ticketId);
     }
@@ -44,46 +100,77 @@ export default function Scanner() {
         <h2 className="text-xl font-bold text-gray-900 mb-2">Ticket Scanner</h2>
         <p className="text-sm text-gray-500 mb-8">Scan QR or enter ticket ID to validate boarding</p>
 
-        {/* Viewfinder simulation */}
-        <div className="relative w-full aspect-video bg-gray-900 rounded-2xl mb-8 flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
-          
-          {/* Scanner frame */}
-          <div className="relative w-48 h-48 border-2 border-green-500/30 rounded-3xl flex items-center justify-center">
-            {/* Corners */}
-            <div className="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-green-500 rounded-tl-xl" />
-            <div className="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-green-500 rounded-tr-xl" />
-            <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-green-500 rounded-bl-xl" />
-            <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-green-500 rounded-br-xl" />
-            
-            {/* Scanning line animation */}
-            {scanning && (
-              <div className="absolute inset-x-4 top-0 h-1 bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.8)] animate-scan-line" />
-            )}
-            
-            <QrCode size={64} className={`transition-opacity duration-300 ${scanning ? 'opacity-100' : 'opacity-20'} text-green-500`} />
-          </div>
-          
-          <div className="absolute bottom-6 text-xs font-bold text-green-500/80 uppercase tracking-widest">
-            {scanning ? "Processing..." : "Ready to scan"}
-          </div>
+        {/* Viewfinder Area */}
+        <div className="relative w-full aspect-video bg-gray-900 rounded-2xl mb-8 flex items-center justify-center overflow-hidden border border-slate-800 shadow-inner">
+          {hasPermission === false ? (
+            <div className="text-center p-6 space-y-4">
+              <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto">
+                <XCircle size={32} className="text-red-500" />
+              </div>
+              <div className="space-y-2">
+                <p className="text-white font-bold text-lg">Camera Permission Denied</p>
+                <p className="text-slate-400 text-sm max-w-xs mx-auto">Please enable camera access in your browser settings to use the scanner.</p>
+              </div>
+              <Button variant="secondary" onClick={startScanner}><RefreshCw size={16} /></Button>
+            </div>
+          ) : cameraError ? (
+            <div className="text-center p-6 space-y-4">
+              <p className="text-red-500 font-bold">{cameraError}</p>
+              <Button variant="secondary" onClick={startScanner}><RefreshCw size={16} /></Button>
+            </div>
+          ) : (
+            <>
+              {/* This is where the camera feed will be rendered */}
+              <div id={qrCodeRegionId} className="w-full h-full"></div>
+              
+              {!hasPermission && hasPermission !== false && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 text-white p-6 text-center z-10">
+                   <Camera size={48} className="text-emerald-500 mb-4 animate-pulse" />
+                   <p className="font-bold text-lg">Requesting Camera Access...</p>
+                   <p className="text-slate-400 text-sm mt-2">Please allow camera permissions when prompted by your browser.</p>
+                </div>
+              )}
+
+              {/* Scanner HUD Overlay */}
+              <div className="absolute inset-0 pointer-events-none z-0">
+                <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+                <div className="relative w-full h-full flex items-center justify-center">
+                   <div className="w-48 h-48 border-2 border-green-500/30 rounded-3xl flex items-center justify-center relative">
+                      <div className="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-green-500 rounded-tl-xl" />
+                      <div className="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-green-500 rounded-tr-xl" />
+                      <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-green-500 rounded-bl-xl" />
+                      <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-green-500 rounded-br-xl" />
+                      
+                      {scanning && (
+                        <div className="absolute inset-x-4 top-0 h-1 bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.8)] animate-scan-line" />
+                      )}
+                   </div>
+                </div>
+                <div className="absolute bottom-6 left-0 right-0 text-center">
+                  <span className="text-xs font-bold text-green-500/80 uppercase tracking-widest px-3 py-1 bg-black/40 rounded-full backdrop-blur-sm">
+                    {scanning ? "Processing..." : "Ready to scan"}
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         <div className="flex gap-3">
           <Input 
-            placeholder="Enter ticket ID (e.g. TKT-001)" 
+            placeholder="Enter ticket ID manually (e.g. TKT-001)" 
             className="font-mono"
             value={ticketId}
             onChange={(e) => setTicketId(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleScan()}
+            onKeyDown={(e) => e.key === "Enter" && handleManualScan()}
           />
           <Button 
             variant="primary" 
-            onClick={handleScan} 
+            onClick={handleManualScan} 
             isLoading={scanning}
             className="px-8"
           >
-            Scan
+            Check
           </Button>
         </div>
         <p className="text-[10px] text-gray-400 mt-4">Try: TKT-001, TKT-002, TKT-003, TKT-005</p>
@@ -159,6 +246,16 @@ export default function Scanner() {
         }
         .animate-scan-line {
           animation: scan-line 2s linear infinite;
+        }
+        /* Custom styling for html5-qrcode video element */
+        #html5qr-code-full-region video {
+          width: 100% !important;
+          height: 100% !important;
+          object-fit: cover !important;
+          border-radius: 1rem;
+        }
+        #html5qr-code-full-region {
+          border: none !important;
         }
       `}</style>
     </div>
