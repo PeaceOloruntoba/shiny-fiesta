@@ -28,7 +28,7 @@ export default function Fleet() {
 
   const [formData, setFormData] = useState<Omit<Bus, "id">>({
     name: "",
-    plate: "",
+    plate_number: "",
     capacity: 32,
     model: "",
     year: new Date().getFullYear(),
@@ -42,7 +42,7 @@ export default function Fleet() {
   const filteredBuses = buses.filter(
     (b) =>
       b.name.toLowerCase().includes(search.toLowerCase()) ||
-      b.plate.toLowerCase().includes(search.toLowerCase()) ||
+      b.plate_number.toLowerCase().includes(search.toLowerCase()) ||
       b.model.toLowerCase().includes(search.toLowerCase()),
   );
 
@@ -51,7 +51,7 @@ export default function Fleet() {
       setSelectedBus(bus);
       setFormData({
         name: bus.name,
-        plate: bus.plate,
+        plate_number: bus.plate_number,
         capacity: bus.capacity,
         model: bus.model,
         year: bus.year,
@@ -61,7 +61,7 @@ export default function Fleet() {
       setSelectedBus(null);
       setFormData({
         name: "",
-        plate: "",
+        plate_number: "",
         capacity: 32,
         model: "",
         year: new Date().getFullYear(),
@@ -116,7 +116,7 @@ export default function Fleet() {
       {/* Search and Filters */}
       <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
         <Input
-          placeholder="Search by name, plate, or model..."
+          placeholder="Search by name, plate number, or model..."
           leftIcon={<Search size={18} />}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -152,7 +152,7 @@ export default function Fleet() {
                 {bus.name}
               </h3>
               <p className="font-mono text-xs text-gray-400 mb-6">
-                {bus.plate}
+                {bus.plate_number}
               </p>
 
               <div className="grid grid-cols-2 gap-4 mb-6">
@@ -240,9 +240,9 @@ export default function Fleet() {
                 label="Plate Number"
                 placeholder="PHC-000-KW"
                 leftIcon={<Hash size={18} />}
-                value={formData.plate}
+                value={formData.plate_number}
                 onChange={(e) =>
-                  setFormData({ ...formData, plate: e.target.value })
+                  setFormData({ ...formData, plate_number: e.target.value })
                 }
               />
               <div className="grid grid-cols-2 gap-4">

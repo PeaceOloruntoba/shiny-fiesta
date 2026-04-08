@@ -4,14 +4,15 @@ import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import { useNavigate } from "react-router-dom";
 import ConfirmationModal from "../components/ui/ConfirmationModal";
+import { useAuth } from "../stores/auth";
 
 export default function LoginScreen() {
+    const { login, loading } = useAuth();
     const [form, setForm] = useState({
         email: "",
         password: "",
     });
 
-    const [loading, setLoading] = useState(false);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -26,12 +27,13 @@ export default function LoginScreen() {
     }
 
     async function confirmLogin() {
-        setLoading(true);
         setIsConfirmOpen(false);
-        setTimeout(() => {
-            setLoading(false);
+        try {
+            await login(form);
             navigate("/dashboard");
-        }, 1000);
+        } catch (error) {
+            console.error("Login failed:", error);
+        }
     }
 
     return (

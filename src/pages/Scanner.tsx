@@ -10,7 +10,7 @@ import {
   RefreshCw
 } from "lucide-react";
 import { useScanner } from "../stores/scanner";
-import { useRoutes } from "../stores/routes";
+// import { useRoutes } from "../stores/routes";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import { Html5Qrcode } from "html5-qrcode";
@@ -23,7 +23,7 @@ const statusCfg: Record<string, { bg: string; color: string; label: string }> = 
 
 export default function Scanner() {
   const { scanning, result, scan, validate, reset } = useScanner();
-  const { routes } = useRoutes();
+  // const { routes } = useRoutes();
   const [ticketId, setTicketId] = useState("");
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
@@ -173,7 +173,6 @@ export default function Scanner() {
             Check
           </Button>
         </div>
-        <p className="text-[10px] text-gray-400 mt-4">Try: TKT-001, TKT-002, TKT-003, TKT-005</p>
       </div>
 
       {/* Result Card */}
@@ -200,7 +199,7 @@ export default function Scanner() {
               <p className="font-mono text-lg font-bold text-gray-900 mb-1">{result.id}</p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <UserIcon size={14} />
-                {result.userId}
+                {result.user_name}
               </div>
             </div>
             <div className={`px-4 py-2 rounded-xl text-xs font-bold uppercase ${statusCfg[result.status].bg} ${statusCfg[result.status].color}`}>
@@ -210,9 +209,9 @@ export default function Scanner() {
 
           <div className="grid grid-cols-2 gap-4 mb-8">
             {[
-              { label: "Route", value: routes.find(r => r.id === result.routeId)?.from.split(" ")[0] + " → " + routes.find(r => r.id === result.routeId)?.to.split(" ")[0], icon: MapPin },
-              { label: "Date", value: result.date, icon: Calendar },
-              { label: "Schedule", value: result.departure, icon: Clock },
+              { label: "Route", value: `${result.origin} → ${result.destination}`, icon: MapPin },
+              { label: "Date", value: new Date(result.booking_date).toLocaleDateString(), icon: Calendar },
+              { label: "Schedule", value: result.departure_time, icon: Clock },
               { label: "Seats", value: result.seats.join(", "), icon: QrCode },
             ].map((item) => (
               <div key={item.label} className="bg-gray-50 rounded-xl p-3">

@@ -9,6 +9,7 @@ import Scanner from "./pages/Scanner";
 import AppLayout from "./layouts/AppLayout";
 import Login from "./pages/Login";
 import { Toaster } from "sonner";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
   return (
@@ -19,12 +20,14 @@ export default function App() {
           <Routes>
             <Route path="/" element={<AppSafe />} />
             <Route path="/login" element={<Login />} />
-            <Route path="" element={<AppLayout />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/routes" element={<RRoutes />} />
-              <Route path="/fleet" element={<Fleet />} />
-              <Route path="/bookings" element={<Bookings />} />
-              <Route path="/scanner" element={<Scanner />} />
+            <Route element={<ProtectedRoute />}>
+              <Route element={<AppLayout />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/routes" element={<RRoutes />} />
+                <Route path="/fleet" element={<Fleet />} />
+                <Route path="/bookings" element={<Bookings />} />
+                <Route path="/scanner" element={<Scanner />} />
+              </Route>
             </Route>
           </Routes>
         </Router>

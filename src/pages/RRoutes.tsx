@@ -28,14 +28,14 @@ export default function RRoutes() {
   const [routeToDelete, setRouteToDelete] = useState<string | null>(null);
 
   const [formData, setFormData] = useState<Omit<Route, "id">>({
-    from: "",
-    to: "",
+    origin: "",
+    destination: "",
     duration: "",
     distance: "",
     fare: 0,
     departures: [],
     color: "#10b981",
-    busId: "",
+    bus_id: "",
   });
 
   const [newDeparture, setNewDeparture] = useState("");
@@ -47,8 +47,8 @@ export default function RRoutes() {
 
   const filteredRoutes = routes.filter(
     (r) =>
-      r.from.toLowerCase().includes(search.toLowerCase()) ||
-      r.to.toLowerCase().includes(search.toLowerCase()) ||
+      r.origin.toLowerCase().includes(search.toLowerCase()) ||
+      r.destination.toLowerCase().includes(search.toLowerCase()) ||
       r.id.toLowerCase().includes(search.toLowerCase()),
   );
 
@@ -56,26 +56,26 @@ export default function RRoutes() {
     if (route) {
       setSelectedRoute(route);
       setFormData({
-        from: route.from,
-        to: route.to,
+        origin: route.origin,
+        destination: route.destination,
         duration: route.duration,
         distance: route.distance,
         fare: route.fare,
         departures: route.departures,
         color: route.color,
-        busId: route.busId,
+        bus_id: route.bus_id,
       });
     } else {
       setSelectedRoute(null);
       setFormData({
-        from: "",
-        to: "",
+        origin: "",
+        destination: "",
         duration: "",
         distance: "",
         fare: 0,
         departures: [],
         color: "#10b981",
-        busId: buses[0]?.id || "",
+        bus_id: buses[0]?.id || "",
       });
     }
     setIsModalOpen(true);
@@ -151,7 +151,7 @@ export default function RRoutes() {
 
       <div className="grid grid-cols-1 gap-4">
         {filteredRoutes.map((route) => {
-          const bus = buses.find((b) => b.id === route.busId);
+          const bus = buses.find((b) => b.id === route.bus_id);
           return (
             <div
               key={route.id}
@@ -168,7 +168,7 @@ export default function RRoutes() {
                       {route.id}
                     </span>
                     <h3 className="text-lg font-bold text-gray-900">
-                      {route.from} → {route.to}
+                      {route.origin} → {route.destination}
                     </h3>
                   </div>
 
@@ -265,18 +265,18 @@ export default function RRoutes() {
                   label="From (Origin)"
                   placeholder="e.g. Main Campus"
                   leftIcon={<MapPin size={18} className="text-green-500" />}
-                  value={formData.from}
+                  value={formData.origin}
                   onChange={(e) =>
-                    setFormData({ ...formData, from: e.target.value })
+                    setFormData({ ...formData, origin: e.target.value })
                   }
                 />
                 <Input
                   label="To (Destination)"
                   placeholder="e.g. City Center"
                   leftIcon={<MapPin size={18} className="text-red-500" />}
-                  value={formData.to}
+                  value={formData.destination}
                   onChange={(e) =>
-                    setFormData({ ...formData, to: e.target.value })
+                    setFormData({ ...formData, destination: e.target.value })
                   }
                 />
               </div>
@@ -318,15 +318,15 @@ export default function RRoutes() {
                   </label>
                   <select
                     className="w-full px-4 py-3 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#4CAF50] text-sm font-medium"
-                    value={formData.busId}
+                    value={formData.bus_id}
                     onChange={(e) =>
-                      setFormData({ ...formData, busId: e.target.value })
+                      setFormData({ ...formData, bus_id: e.target.value })
                     }
                   >
                     <option value="">Select a bus</option>
                     {buses.map((b) => (
                       <option key={b.id} value={b.id}>
-                        {b.name} ({b.plate})
+                        {b.name} ({b.plate_number})
                       </option>
                     ))}
                   </select>

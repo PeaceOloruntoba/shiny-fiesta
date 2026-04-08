@@ -20,7 +20,7 @@ const statusCfg: Record<string, { bg: string; color: string; label: string }> = 
 
 export default function Bookings() {
   const { bookings, loading, fetchBookings, updateBookingStatus } = useBookings();
-  const { routes, fetchRoutes } = useRoutes();
+  const { fetchRoutes } = useRoutes();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "confirmed" | "used" | "cancelled">("all");
   
@@ -34,7 +34,8 @@ export default function Bookings() {
 
   const filteredBookings = bookings.filter(b => {
     const matchesSearch = b.id.toLowerCase().includes(search.toLowerCase()) || 
-                          b.userId.toLowerCase().includes(search.toLowerCase());
+                          b.user_id.toLowerCase().includes(search.toLowerCase()) ||
+                          b.user_name?.toLowerCase().includes(search.toLowerCase());
     const matchesFilter = filter === "all" || b.status === filter;
     return matchesSearch && matchesFilter;
   });
@@ -65,18 +66,18 @@ export default function Bookings() {
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
           <Input 
-            placeholder="Search by ticket ID or user ID..." 
+            placeholder="Search by ticket ID, user ID or name..." 
             leftIcon={<Search size={18} />} 
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <div className="flex gap-2 bg-white p-2 rounded-2xl border border-gray-100 shadow-sm">
+        <div className="flex gap-2 bg-white p-2 rounded-2xl border border-gray-100 shadow-sm overflow-x-auto">
           {["all", "confirmed", "used", "cancelled"].map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f as any)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold capitalize transition-all ${
+              className={`px-4 py-2 rounded-xl text-xs font-bold capitalize transition-all whitespace-nowrap ${
                 filter === f 
                   ? "bg-green-500 text-white shadow-md shadow-green-200" 
                   : "text-gray-500 hover:bg-gray-50"
@@ -94,14 +95,13 @@ export default function Bookings() {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100">
-                {["Ticket", "User", "Route", "Schedule", "Seats", "Fare", "Status", ""].map((h) => (
+                {["Ticket", "Customer", "Route", "Schedule", "Seats", "Fare", "Status", ""].map((h) => (
                   <th key={h} className="py-4 px-6 text-[10px] font-bold text-gray-400 uppercase tracking-wider">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {filteredBookings.map((b) => {
-                const rt = routes.find((r) => r.id === b.routeId);
                 const sc = statusCfg[b.status] || { bg: "bg-gray-50", color: "text-gray-500", label: b.status };
                 return (
                   <tr key={b.id} className="hover:bg-gray-50/50 transition-colors">
@@ -116,23 +116,26 @@ export default function Bookings() {
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-2">
                         <UserIcon size={14} className="text-gray-400" />
-                        <span className="text-sm font-semibold text-gray-700">{b.userId}</span>
+                        <div>
+                          <div className="text-sm font-semibold text-gray-700">{b.user_name || "Guest"}</div>
+                          <div className="text-[10px] text-gray-400">{b.user_email}</div>
+                        </div>
                       </div>
                     </td>
                     <td className="py-4 px-6">
                       <p className="text-sm font-medium text-gray-900">
-                        {rt ? `${rt.from.split(" ")[0]} → ${rt.to.split(" ")[0]}` : "Unknown"}
+                        {b.origin} → {b.destination}
                       </p>
                     </td>
                     <td className="py-4 px-6">
                       <div className="space-y-1">
                         <div className="flex items-center gap-1.5 text-xs text-gray-500">
                           <Calendar size={12} />
-                          {b.date}
+                          {new Date(b.booking_date).toLocaleDateString()}
                         </div>
                         <div className="flex items-center gap-1.5 text-xs font-mono text-gray-400">
                           <Clock size={12} />
-                          {b.departure}
+                          {b.departure_time}
                         </div>
                       </div>
                     </td>
@@ -146,7 +149,7 @@ export default function Bookings() {
                       </div>
                     </td>
                     <td className="py-4 px-6">
-                      <span className="text-sm font-bold text-emerald-600">₦{b.fare}</span>
+                      <span className="text-sm font-bold text-emerald-600">₦{b.total_fare}</span>
                     </td>
                     <td className="py-4 px-6">
                       <span className={`${sc.bg} ${sc.color} text-[10px] font-bold px-2.5 py-1 rounded-full uppercase`}>

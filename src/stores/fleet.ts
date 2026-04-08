@@ -1,11 +1,12 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { toast } from "sonner";
+import { api } from "../utils/api";
 
 export type Bus = {
     id: string;
     name: string;
-    plate: string;
+    plate_number: string;
     capacity: number;
     model: string;
     year: number;
@@ -23,51 +24,71 @@ type FleetState = {
     deleteBus: (id: string) => Promise<void>;
 };
 
-const MOCK_BUSES: Bus[] = [
-    { id: "B001", name: "Green Eagle I",    plate: "PHC-001-KW", capacity: 32, model: "Toyota Coaster",   year: 2022, status: "active" },
-    { id: "B002", name: "Blue Hawk II",     plate: "PHC-002-KW", capacity: 24, model: "Mitsubishi Rosa",  year: 2021, status: "active" },
-    { id: "B003", name: "Gold Falcon III",  plate: "PHC-003-KW", capacity: 32, model: "Toyota Coaster",   year: 2023, status: "active" },
-    { id: "B004", name: "Purple Condor IV", plate: "PHC-004-KW", capacity: 16, model: "Ford Transit",     year: 2022, status: "maintenance" },
-];
-
 export const useFleet = create<FleetState>()(
     persist(
         (set) => ({
-            buses: MOCK_BUSES,
+            buses: [],
             loading: false,
 
             fetchBuses: async () => {
                 set({ loading: true });
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-                set({ loading: false });
+                try {
+                    const res = await api.get("/admin/fleet");
+                    set({ buses: res.data.data, loading: false });
+                } catch (error: any) {
+                    toast.error("Failed to fetch fleet", {
+                        description: error.response?.data?.message || "An error occurred",
+                    });
+                    set({ loading: false });
+                }
             },
 
             addBus: async (bus) => {
                 set({ loading: true });
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-                const newBus = { ...bus, id: `B00${Math.floor(Math.random() * 1000)}` };
-                set((state) => ({ buses: [newBus, ...state.buses], loading: false }));
-                toast.success("Bus added successfully");
+                try {
+                    const res = await api.post("/admin/fleet", bus);
+                    set((state) => ({ buses: [res.data.data, ...state.buses], loading: false }));
+                    toast.success("Bus added successfully");
+                } catch (error: any) {
+                    toast.error("Failed to add bus", {
+                        description: error.response?.data?.message || "An error occurred",
+                    });
+                    set({ loading: false });
+                }
             },
 
             updateBus: async (id, updatedBus) => {
                 set({ loading: true });
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-                set((state) => ({
-                    buses: state.buses.map((b) => (b.id === id ? { ...b, ...updatedBus } : b)),
-                    loading: false,
-                }));
-                toast.success("Bus updated successfully");
+                try {
+                    const res = await api.put(`/admin/fleet/${id}`, updatedBus);
+                    set((state) => ({
+                        buses: state.buses.map((b) => (b.id === id ? res.data.data : b)),
+                        loading: false,
+                    }));
+                    toast.success("Bus updated successfully");
+                } catch (error: any) {
+                    toast.error("Failed to update bus", {
+                        description: error.response?.data?.message || "An error occurred",
+                    });
+                    set({ loading: false });
+                }
             },
 
             deleteBus: async (id) => {
                 set({ loading: true });
-                await new Promise((resolve) => setTimeout(resolve, 1000));
-                set((state) => ({
-                    buses: state.buses.filter((b) => b.id !== id),
-                    loading: false,
-                }));
-                toast.success("Bus deleted successfully");
+                try {
+                    await api.delete(`/admin/fleet/${id}`);
+                    set((state) => ({
+                        buses: state.buses.filter((b) => b.id !== id),
+                        loading: false,
+                    }));
+                    toast.success("Bus deleted successfully");
+                } catch (error: any) {
+                    toast.error("Failed to delete bus", {
+                        description: error.response?.data?.message || "An error occurred",
+                    });
+                    set({ loading: false });
+                }
             },
         }),
         {
