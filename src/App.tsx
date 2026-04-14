@@ -1,5 +1,3 @@
-// @ts-ignore
-import AppSafe from "./campus_transit";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import RRoutes from "./pages/RRoutes";
@@ -10,6 +8,7 @@ import AppLayout from "./layouts/AppLayout";
 import Login from "./pages/Login";
 import { Toaster } from "sonner";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AppSafe from "./components/AppSafe";
 
 export default function App() {
   return (
