@@ -126,25 +126,26 @@ export default function RRoutes() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Route Management</h2>
-          <p className="text-sm text-gray-500">
-            {routes.length} routes configured
+          <h2 className="text-xl font-bold text-gray-900 uppercase tracking-widest">Route Management</h2>
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+            {routes.length} active routes configured
           </p>
         </div>
-        <Button onClick={() => handleOpenModal()} variant="primary">
+        <Button onClick={() => handleOpenModal()} variant="primary" className="h-10 px-6 text-xs font-bold uppercase tracking-widest">
           <Plus size={18} />
           Add Route
         </Button>
       </div>
 
-      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+      <div className="bg-white p-2 rounded-2xl border border-gray-100 shadow-sm">
         <Input
           placeholder="Search by origin, destination, or route ID..."
-          leftIcon={<Search size={18} />}
+          leftIcon={<Search size={16} className="text-gray-400" />}
           value={search}
+          className="border-none bg-transparent h-10 text-sm"
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
@@ -155,68 +156,49 @@ export default function RRoutes() {
           return (
             <div
               key={route.id}
-              className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
+              className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-lg transition-all group"
             >
               <div className="flex flex-col md:flex-row justify-between gap-6">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-4">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-3 mb-6">
                     <div
-                      className="w-2.5 h-2.5 rounded-full"
+                      className="w-3 h-3 rounded-full shrink-0 shadow-sm"
                       style={{ background: route.color }}
                     />
-                    <span className="font-mono text-xs text-gray-400 uppercase tracking-wider">
-                      {route.id}
-                    </span>
-                    <h3 className="text-lg font-bold text-gray-900">
-                      {route.origin} → {route.destination}
-                    </h3>
+                    <div className="min-w-0">
+                      <h3 className="text-lg font-bold text-gray-900 truncate">
+                        {route.origin} → {route.destination}
+                      </h3>
+                      <p className="font-mono text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">
+                        Route #{route.id.slice(0, 8)}
+                      </p>
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
                     <div>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">
-                        Distance
-                      </p>
-                      <p className="text-sm font-semibold text-gray-700">
-                        {route.distance}
-                      </p>
+                      <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Distance</p>
+                      <p className="text-xs font-bold text-gray-700">{route.distance}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">
-                        Duration
-                      </p>
-                      <p className="text-sm font-semibold text-gray-700">
-                        {route.duration}
-                      </p>
+                      <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Duration</p>
+                      <p className="text-xs font-bold text-gray-700">{route.duration}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">
-                        Fare
-                      </p>
-                      <p className="text-sm font-bold text-emerald-600">
-                        ₦{route.fare}
-                      </p>
+                      <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Fare</p>
+                      <p className="text-xs font-black text-emerald-600">₦{route.fare}</p>
                     </div>
                     <div>
-                      <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">
-                        Assigned Bus
-                      </p>
-                      <p className="text-sm font-semibold text-gray-700">
-                        {bus?.name || "—"}
-                      </p>
+                      <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Assigned Bus</p>
+                      <p className="text-xs font-bold text-gray-700 truncate">{bus?.name || "Unassigned"}</p>
                     </div>
                   </div>
 
                   <div>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase mb-2">
-                      Daily Schedules
-                    </p>
+                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-3">Departure Times</p>
                     <div className="flex flex-wrap gap-2">
                       {route.departures.map((time) => (
-                        <span
-                          key={time}
-                          className="px-3 py-1 bg-gray-50 border border-gray-100 rounded-lg text-xs font-mono text-gray-600"
-                        >
+                        <span key={time} className="px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-lg text-[10px] font-bold text-gray-600 font-mono">
                           {time}
                         </span>
                       ))}
@@ -224,19 +206,21 @@ export default function RRoutes() {
                   </div>
                 </div>
 
-                <div className="flex md:flex-col gap-2 justify-end">
+                <div className="flex md:flex-col gap-2 shrink-0 md:justify-center md:border-l md:border-gray-50 md:pl-6">
                   <Button
                     onClick={() => handleOpenModal(route)}
                     variant="secondary"
+                    className="flex-1 md:flex-none h-10 px-4 text-[10px] font-bold uppercase tracking-widest"
                   >
-                    <Edit size={16} />
+                    <Edit size={14} />
                     Edit
                   </Button>
                   <Button
                     onClick={() => handleDelete(route.id)}
                     variant="danger"
+                    className="h-10 w-10 p-0 flex-none"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={14} />
                   </Button>
                 </div>
               </div>

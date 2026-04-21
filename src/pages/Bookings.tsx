@@ -2,9 +2,8 @@ import { useState, useEffect } from "react";
 import { 
   Ticket, 
   Search,
-  Calendar,
-  Clock,
-  User as UserIcon,
+  CheckCircle,
+  LogOut,
 } from "lucide-react";
 import { useBookings, type Booking } from "../stores/bookings";
 import { useRoutes } from "../stores/routes";
@@ -54,33 +53,39 @@ export default function Bookings() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Booking Management</h2>
-          <p className="text-sm text-gray-500">{bookings.length} total bookings</p>
+          <h2 className="text-xl font-bold text-gray-900 uppercase tracking-widest">Booking Management</h2>
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{bookings.length} total records found</p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="secondary" className="h-10 px-4 text-xs font-bold uppercase tracking-widest">
+            Export CSV
+          </Button>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="flex-1 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+      <div className="flex flex-col lg:flex-row gap-4">
+        <div className="flex-1 bg-white p-2 rounded-2xl border border-gray-100 shadow-sm">
           <Input 
-            placeholder="Search by ticket ID, user ID or name..." 
-            leftIcon={<Search size={18} />} 
+            placeholder="Search by ticket, name or email..." 
+            leftIcon={<Search size={16} className="text-gray-400" />} 
             value={search}
+            className="border-none bg-transparent h-10 text-sm"
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <div className="flex gap-2 bg-white p-2 rounded-2xl border border-gray-100 shadow-sm overflow-x-auto">
+        <div className="flex gap-1.5 bg-white p-1.5 rounded-2xl border border-gray-100 shadow-sm overflow-x-auto no-scrollbar">
           {["all", "confirmed", "used", "cancelled"].map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f as any)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold capitalize transition-all whitespace-nowrap ${
+              className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-tighter transition-all whitespace-nowrap ${
                 filter === f 
-                  ? "bg-green-500 text-white shadow-md shadow-green-200" 
-                  : "text-gray-500 hover:bg-gray-50"
+                  ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" 
+                  : "text-gray-400 hover:bg-gray-50"
               }`}
             >
               {f}
@@ -90,90 +95,81 @@ export default function Bookings() {
       </div>
 
       {/* Bookings Table */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-gray-50/50 border-b border-gray-100">
-                {["Ticket", "Customer", "Route", "Schedule", "Seats", "Fare", "Status", ""].map((h) => (
+              <tr className="bg-gray-50/50">
+                {["Ticket", "Customer", "Route & Schedule", "Seats", "Fare", "Status", "Actions"].map((h) => (
                   <th key={h} className="py-4 px-6 text-[10px] font-bold text-gray-400 uppercase tracking-wider">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-gray-50">
               {filteredBookings.map((b) => {
                 const sc = statusCfg[b.status] || { bg: "bg-gray-50", color: "text-gray-500", label: b.status };
                 return (
                   <tr key={b.id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
-                          <Ticket size={16} className="text-gray-500" />
+                        <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400">
+                          <Ticket size={14} />
                         </div>
-                        <span className="font-mono text-xs font-bold text-gray-700">{b.id}</span>
+                        <span className="font-mono text-[10px] font-bold text-gray-400">#{b.id.slice(0, 8)}</span>
                       </div>
                     </td>
                     <td className="py-4 px-6">
-                      <div className="flex items-center gap-2">
-                        <UserIcon size={14} className="text-gray-400" />
-                        <div>
-                          <div className="text-sm font-semibold text-gray-700">{b.user_name || "Guest"}</div>
-                          <div className="text-[10px] text-gray-400">{b.user_email}</div>
-                        </div>
+                      <div className="min-w-[150px]">
+                        <div className="text-xs font-bold text-gray-900">{b.user_name || "Guest User"}</div>
+                        <div className="text-[10px] text-gray-400 font-medium">{b.user_email}</div>
                       </div>
                     </td>
                     <td className="py-4 px-6">
-                      <p className="text-sm font-medium text-gray-900">
-                        {b.origin} → {b.destination}
-                      </p>
-                    </td>
-                    <td className="py-4 px-6">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                          <Calendar size={12} />
-                          {new Date(b.booking_date).toLocaleDateString()}
-                        </div>
-                        <div className="flex items-center gap-1.5 text-xs font-mono text-gray-400">
-                          <Clock size={12} />
-                          {b.departure_time}
+                      <div className="min-w-[180px]">
+                        <p className="text-xs font-bold text-gray-900">
+                          {b.origin} → {b.destination}
+                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded uppercase">{b.departure_time}</span>
+                          <span className="text-[9px] font-bold text-gray-400 uppercase">{new Date(b.booking_date).toLocaleDateString()}</span>
                         </div>
                       </div>
                     </td>
                     <td className="py-4 px-6">
-                      <div className="flex flex-wrap gap-1">
+                      <div className="flex flex-wrap gap-1 min-w-[80px]">
                         {b.seats.map(s => (
-                          <span key={s} className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-bold text-gray-600">
+                          <span key={s} className="w-5 h-5 flex items-center justify-center bg-gray-50 rounded text-[9px] font-bold text-gray-500 border border-gray-100">
                             {s}
                           </span>
                         ))}
                       </div>
                     </td>
                     <td className="py-4 px-6">
-                      <span className="text-sm font-bold text-emerald-600">₦{b.total_fare}</span>
+                      <span className="text-xs font-bold text-gray-900">₦{b.total_fare}</span>
                     </td>
                     <td className="py-4 px-6">
-                      <span className={`${sc.bg} ${sc.color} text-[10px] font-bold px-2.5 py-1 rounded-full uppercase`}>
+                      <span className={`${sc.bg} ${sc.color} text-[9px] font-black px-2.5 py-1 rounded-lg uppercase tracking-tighter`}>
                         {sc.label}
                       </span>
                     </td>
                     <td className="py-4 px-6">
-                      <div className="flex justify-end gap-2">
+                      <div className="flex items-center gap-2">
                         {b.status === "confirmed" && (
                           <>
-                            <Button 
-                              variant="secondary" 
-                              className="h-8 px-3 text-[10px]" 
+                            <button 
+                              className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
                               onClick={() => handleStatusChange(b.id, "used")}
+                              title="Mark Used"
                             >
-                              Mark Used
-                            </Button>
-                            <Button 
-                              variant="danger" 
-                              className="h-8 px-3 text-[10px]" 
+                              <CheckCircle size={16} />
+                            </button>
+                            <button 
+                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                               onClick={() => handleStatusChange(b.id, "cancelled")}
+                              title="Cancel"
                             >
-                              Cancel
-                            </Button>
+                              <LogOut size={16} className="rotate-90" />
+                            </button>
                           </>
                         )}
                       </div>

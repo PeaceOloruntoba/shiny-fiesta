@@ -99,26 +99,27 @@ export default function Fleet() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Fleet Management</h2>
-          <p className="text-sm text-gray-500">
-            {buses.length} vehicles in fleet
+          <h2 className="text-xl font-bold text-gray-900 uppercase tracking-widest">Fleet Management</h2>
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+            {buses.length} active vehicles in network
           </p>
         </div>
-        <Button onClick={() => handleOpenModal()} variant="primary">
+        <Button onClick={() => handleOpenModal()} variant="primary" className="h-10 px-6 text-xs font-bold uppercase tracking-widest">
           <Plus size={18} />
           Add Vehicle
         </Button>
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+      <div className="bg-white p-2 rounded-2xl border border-gray-100 shadow-sm">
         <Input
           placeholder="Search by name, plate number, or model..."
-          leftIcon={<Search size={18} />}
+          leftIcon={<Search size={16} className="text-gray-400" />}
           value={search}
+          className="border-none bg-transparent h-10 text-sm"
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
@@ -130,19 +131,16 @@ export default function Fleet() {
           return (
             <div
               key={bus.id}
-              className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
+              className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-lg transition-all group"
             >
               <div className="flex justify-between items-start mb-6">
                 <div
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center ${isActive ? "bg-green-50" : "bg-amber-50"}`}
+                  className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${isActive ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"}`}
                 >
-                  <BusIcon
-                    size={24}
-                    className={isActive ? "text-green-600" : "text-amber-600"}
-                  />
+                  <BusIcon size={24} />
                 </div>
                 <span
-                  className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${isActive ? "bg-green-50 text-green-600" : "bg-amber-50 text-amber-600"}`}
+                  className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${isActive ? "bg-emerald-50 text-emerald-600" : "bg-amber-50 text-amber-600"}`}
                 >
                   {bus.status}
                 </span>
@@ -151,60 +149,44 @@ export default function Fleet() {
               <h3 className="text-lg font-bold text-gray-900 mb-1">
                 {bus.name}
               </h3>
-              <p className="font-mono text-xs text-gray-400 mb-6">
+              <p className="font-mono text-[10px] font-bold text-gray-400 mb-6 uppercase tracking-widest">
                 {bus.plate_number}
               </p>
 
-              <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-2 gap-y-6 gap-x-4 mb-8">
                 <div>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">
-                    Model
-                  </p>
-                  <p className="text-sm font-semibold text-gray-700">
-                    {bus.model}
-                  </p>
+                  <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Model</p>
+                  <p className="text-xs font-bold text-gray-700 truncate">{bus.model}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">
-                    Year
-                  </p>
-                  <p className="text-sm font-semibold text-gray-700">
-                    {bus.year}
-                  </p>
+                  <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Year</p>
+                  <p className="text-xs font-bold text-gray-700">{bus.year}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">
-                    Capacity
-                  </p>
-                  <p className="text-sm font-semibold text-gray-700">
-                    {bus.capacity} seats
-                  </p>
+                  <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Capacity</p>
+                  <p className="text-xs font-bold text-gray-700">{bus.capacity} Seats</p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">
-                    Bus ID
-                  </p>
-                  <p className="text-sm font-semibold text-gray-700">
-                    {bus.id}
-                  </p>
+                  <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Vehicle ID</p>
+                  <p className="text-[10px] font-mono font-bold text-gray-400 truncate">#{bus.id.slice(0, 8)}</p>
                 </div>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Button
                   onClick={() => handleOpenModal(bus)}
                   variant="secondary"
-                  className="flex-1"
+                  className="flex-1 h-9 text-[10px] font-bold uppercase tracking-widest"
                 >
-                  <Edit size={16} />
+                  <Edit size={14} />
                   Edit
                 </Button>
                 <Button
                   onClick={() => handleDelete(bus.id)}
                   variant="danger"
-                  className="px-3"
+                  className="h-9 w-9 p-0"
                 >
-                  <Trash2 size={16} />
+                  <Trash2 size={14} />
                 </Button>
               </div>
             </div>
