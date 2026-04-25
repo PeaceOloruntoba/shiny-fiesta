@@ -151,7 +151,7 @@ export default function RRoutes() {
       </div>
 
       <div className="grid grid-cols-1 gap-4">
-        {filteredRoutes.map((route) => {
+        {filteredRoutes?.map((route) => {
           const bus = buses.find((b) => b.id === route.bus_id);
           return (
             <div
@@ -197,7 +197,7 @@ export default function RRoutes() {
                   <div>
                     <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-3">Departure Times</p>
                     <div className="flex flex-wrap gap-2">
-                      {route.departures.map((time) => (
+                      {route.departures?.map((time) => (
                         <span key={time} className="px-3 py-1.5 bg-gray-50 border border-gray-100 rounded-lg text-[10px] font-bold text-gray-600 font-mono">
                           {time}
                         </span>
@@ -308,7 +308,7 @@ export default function RRoutes() {
                     }
                   >
                     <option value="">Select a bus</option>
-                    {buses.map((b) => (
+                    {buses?.map((b) => (
                       <option key={b.id} value={b.id}>
                         {b.name} ({b.plate_number})
                       </option>
@@ -337,7 +337,7 @@ export default function RRoutes() {
                   </Button>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {formData.departures.map((time) => (
+                  {formData.departures?.map((time) => (
                     <span
                       key={time}
                       className="flex items-center gap-1.5 px-2.5 py-1 bg-green-50 text-green-700 rounded-md text-xs font-mono border border-green-100"
