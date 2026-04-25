@@ -61,7 +61,7 @@ export default function RRoutes() {
         duration: route.duration,
         distance: route.distance,
         fare: route.fare,
-        departures: route.departures,
+        departures: route.departures || [],
         color: route.color,
         bus_id: route.bus_id,
       });
