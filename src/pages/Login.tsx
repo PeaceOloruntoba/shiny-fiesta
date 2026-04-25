@@ -44,7 +44,7 @@ export default function LoginScreen() {
                         <Bus size={36} className="text-white" />
                     </div>
                     <h1 className="text-2xl font-bold text-white tracking-widest">
-                        CAMPUSTRANSIT
+                        PAULO
                     </h1>
                     <p className="text-emerald-300 text-sm mt-2">
                         Admin Dashboard Access

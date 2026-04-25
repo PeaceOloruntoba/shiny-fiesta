@@ -36,7 +36,7 @@ export default function Sidebar({ nav, isOpen, onClose }: any) {
                 {isOpen && (
                     <div className="truncate">
                         <p className="text-xs font-bold tracking-widest text-emerald-400">
-                            CAMPUSTRANSIT
+                            PAULO
                         </p>
                         <p className="text-[10px] text-slate-500 font-medium">ADMIN DASHBOARD</p>
                     </div>
