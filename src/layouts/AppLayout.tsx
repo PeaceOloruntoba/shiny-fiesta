@@ -2,7 +2,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Headbar from "./Headbar";
 import { useState, useMemo } from "react";
-import { BarChart2, Bus, MapPin, QrCode, Ticket } from "lucide-react";
+import { BarChart2, Bus, MapPin, QrCode, Ticket, Users } from "lucide-react";
 
 export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
@@ -14,6 +14,7 @@ export default function AppLayout() {
     { id: "fleet", label: "Fleet", icon: Bus, path: "/fleet" },
     { id: "bookings", label: "Bookings", icon: Ticket, path: "/bookings" },
     { id: "scanner", label: "Scanner", icon: QrCode, path: "/scanner" },
+    { id: "users", label: "Users", icon: Users, path: "/users" },
   ];
 
   // 🔥 derive active menu from URL

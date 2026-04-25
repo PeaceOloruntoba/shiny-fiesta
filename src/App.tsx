@@ -4,6 +4,7 @@ import RRoutes from "./pages/RRoutes";
 import Fleet from "./pages/Fleet";
 import Bookings from "./pages/Bookings";
 import Scanner from "./pages/Scanner";
+import Users from "./pages/Users";
 import AppLayout from "./layouts/AppLayout";
 import Login from "./pages/Login";
 import { Toaster } from "sonner";
@@ -26,6 +27,7 @@ export default function App() {
                 <Route path="/fleet" element={<Fleet />} />
                 <Route path="/bookings" element={<Bookings />} />
                 <Route path="/scanner" element={<Scanner />} />
+                <Route path="/users" element={<Users />} />
               </Route>
             </Route>
           </Routes>
