@@ -17,6 +17,12 @@ const statusCfg: Record<string, { bg: string; color: string; label: string }> = 
     cancelled: { bg: "bg-red-50", color: "text-red-600", label: "Cancelled" },
 };
 
+const payStatusCfg: Record<string, { bg: string; color: string; label: string }> = {
+    paid:    { bg: "bg-emerald-50", color: "text-emerald-600", label: "Paid" },
+    pending: { bg: "bg-amber-50", color: "text-amber-600", label: "Pending" },
+    failed:  { bg: "bg-red-50", color: "text-red-600", label: "Failed" },
+};
+
 export default function Bookings() {
   const { bookings, loading, fetchBookings, updateBookingStatus } = useBookings();
   const { fetchRoutes } = useRoutes();
@@ -100,7 +106,7 @@ export default function Bookings() {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-gray-50/50">
-                {["Ticket", "Customer", "Route & Schedule", "Seats", "Fare", "Status", "Actions"].map((h) => (
+                {["Ticket", "Customer", "Route & Schedule", "Seats", "Fare", "Payment", "Status", "Actions"].map((h) => (
                   <th key={h} className="py-4 px-6 text-[10px] font-bold text-gray-400 uppercase tracking-wider">{h}</th>
                 ))}
               </tr>
@@ -146,6 +152,11 @@ export default function Bookings() {
                     </td>
                     <td className="py-4 px-6">
                       <span className="text-xs font-bold text-gray-900">₦{b.total_fare}</span>
+                    </td>
+                    <td className="py-4 px-6">
+                      <span className={`${payStatusCfg[b.payment_status]?.bg || "bg-gray-50"} ${payStatusCfg[b.payment_status]?.color || "text-gray-500"} text-[9px] font-black px-2.5 py-1 rounded-lg uppercase tracking-tighter`}>
+                        {b.payment_status}
+                      </span>
                     </td>
                     <td className="py-4 px-6">
                       <span className={`${sc.bg} ${sc.color} text-[9px] font-black px-2.5 py-1 rounded-lg uppercase tracking-tighter`}>

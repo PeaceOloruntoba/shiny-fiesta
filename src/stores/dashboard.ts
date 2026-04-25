@@ -5,7 +5,7 @@ import { api } from "../utils/api";
 export type DashboardStats = {
     totalRevenue: number;
     activeBookings: number;
-    tripsCompleted: number;
+    pendingPayments: number;
     routesOperating: number;
 };
 

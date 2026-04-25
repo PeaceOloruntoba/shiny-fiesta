@@ -29,6 +29,12 @@ const statusCfg: Record<string, { bg: string; color: string; label: string }> = 
     cancelled: { bg: "bg-red-50", color: "text-red-600", label: "Cancelled" },
 };
 
+const payStatusCfg: Record<string, { bg: string; color: string; label: string }> = {
+    paid:    { bg: "bg-emerald-50", color: "text-emerald-600", label: "Paid" },
+    pending: { bg: "bg-amber-50", color: "text-amber-600", label: "Pending" },
+    failed:  { bg: "bg-red-50", color: "text-red-600", label: "Failed" },
+};
+
 export default function Dashboard() {
   const { bookings, fetchBookings } = useBookings();
   const { stats, weeklyStats, routeDistribution, fetchDashboardData, loading } = useDashboard();
@@ -40,8 +46,8 @@ export default function Dashboard() {
 
   const kpis = [
     { label: "Total Revenue", value: `₦${(stats?.totalRevenue || 0).toLocaleString()}`, icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50" },
-    { label: "Active Bookings", value: stats?.activeBookings || 0, icon: Ticket, color: "text-blue-600", bg: "bg-blue-50" },
-    { label: "Trips Completed", value: stats?.tripsCompleted || 0, icon: CheckCircle, color: "text-amber-600", bg: "bg-amber-50" },
+    { label: "Active (Paid)", value: stats?.activeBookings || 0, icon: Ticket, color: "text-blue-600", bg: "bg-blue-50" },
+    { label: "Pending Payment", value: stats?.pendingPayments || 0, icon: CheckCircle, color: "text-amber-600", bg: "bg-amber-50" },
     { label: "Routes Operating", value: stats?.routesOperating || 0, icon: MapPin, color: "text-purple-600", bg: "bg-purple-50" },
   ];
 
@@ -136,7 +142,7 @@ export default function Dashboard() {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-gray-50/50">
-                {["Ticket", "Route", "Customer", "Status"].map((h) => (
+                {["Ticket", "Route", "Customer", "Payment", "Status"].map((h) => (
                   <th key={h} className="py-4 px-6 text-[10px] font-bold text-gray-400 uppercase tracking-wider">{h}</th>
                 ))}
               </tr>
@@ -144,6 +150,7 @@ export default function Dashboard() {
             <tbody className="divide-y divide-gray-50">
               {bookings.slice(0, 5).map((b) => {
                 const sc = statusCfg[b.status] || { bg: "bg-gray-50", color: "text-gray-500", label: b.status };
+                const pc = payStatusCfg[b.payment_status] || { bg: "bg-gray-50", color: "text-gray-500", label: b.payment_status };
                 return (
                   <tr key={b.id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="py-4 px-6 font-mono text-[10px] font-bold text-gray-400">#{b.id.slice(0, 8)}</td>
@@ -154,6 +161,11 @@ export default function Dashboard() {
                     <td className="py-4 px-6">
                         <div className="text-xs font-bold text-gray-900">{b.user_name}</div>
                         <div className="text-[10px] text-gray-400 font-medium">{new Date(b.booking_date).toLocaleDateString()}</div>
+                    </td>
+                    <td className="py-4 px-6">
+                      <span className={`${pc.bg} ${pc.color} text-[9px] font-black px-2.5 py-1 rounded-lg uppercase tracking-tighter`}>
+                        {pc.label}
+                      </span>
                     </td>
                     <td className="py-4 px-6">
                       <span className={`${sc.bg} ${sc.color} text-[9px] font-black px-2.5 py-1 rounded-lg uppercase tracking-tighter`}>
